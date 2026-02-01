@@ -52,8 +52,8 @@ await loadCache()
 
 setInterval(loadCache, 10 * 60 * 1000)
 setInterval(checkOfflineDevices, 60 * 1000)
-const PORT = 4000
 
+const PORT = 4000
 app.listen(PORT, () => {
     console.log('server listen on PORT: '+PORT)
 })
