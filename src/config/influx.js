@@ -15,7 +15,11 @@ const influx = new InfluxDB({
 export const writeApi = influx.getWriteApi(
   INFLUX_ORG,
   INFLUX_BUCKET,
-  'ms' // timestamp millisecond
+  'ms', // timestamp millisecond
+  { 
+    batchSize: 10,
+    flushInterval: 1000
+  }
 )
 
 export const queryApi = influx.getQueryApi(process.env.INFLUX_ORG)
