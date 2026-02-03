@@ -2,20 +2,20 @@ import { deviceMap } from '../cache/deviceCache.js'
 import Device from '../models/Device.js'
 import { sendDeviceStatusTelegram } from '../services/telegram.service.js'
 
-const OFFLINE_THRESHOLD_MINUTES = 10
-
 export const checkOfflineDevices = async () => {
   const now = Date.now()
-  const offlineBefore = new Date(
-    now - OFFLINE_THRESHOLD_MINUTES * 60 * 1000
-  )
 
   for (const [key, device] of deviceMap.entries()) {
-    if (!device.lastSeen) continue
+    if (!device.lastSeen || !device.periodic) continue
+
+    const thresholdMs =
+      device.periodic * 3 * 60 * 1000 // periodic × 3
+
+    const offlineBefore = now - thresholdMs
 
     if (
       device.status === 'ONLINE' &&
-      device.lastSeen < offlineBefore
+      new Date(device.lastSeen).getTime() < offlineBefore
     ) {
       // update cache
       device.status = 'OFFLINE'
@@ -26,17 +26,15 @@ export const checkOfflineDevices = async () => {
         { status: 'OFFLINE' }
       ).catch(() => {})
 
-      // 🔔 Alert OFFLINE (sekali)
+      // alert OFFLINE (sekali)
       sendDeviceStatusTelegram({
         tenantId: device.tenantId,
         device,
         status: 'OFFLINE',
         lastSeen: device.lastSeen
       }).catch(() => {})
-      console.log(`🔴 Device OFFLINE: ${device.tenantId} ${device.deviceId}`)
 
-      // TODO next:
-      // sendTelegramOfflineAlert(device)
+      console.log(`🔴 Device OFFLINE: ${device.tenantId} ${device.deviceId}`)
     }
   }
 }
