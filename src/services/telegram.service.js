@@ -72,7 +72,6 @@ export const sendDeviceStatusTelegram = async ({
 🔴 *DEVICE OFFLINE*
 🏷 Tenant: ${tenant.name}
 📍 Device: ${device.name} (${device.deviceId})
-📌 ${device.address ?? '-'}
 🕒 Terakhir aktif: ${timeStr}
       `
     }
@@ -82,7 +81,6 @@ export const sendDeviceStatusTelegram = async ({
 🟢 *DEVICE ONLINE*
 🏷 Tenant: ${tenant.name}
 📍 Device: ${device.name} (${device.deviceId})
-📌 ${device.address ?? '-'}
 🕒 Aktif kembali: ${new Date().toLocaleString('id-ID')}
       `
     }
