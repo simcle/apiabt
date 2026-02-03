@@ -19,7 +19,13 @@ const deviceSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-
+    // ⬇️ interval kirim data (menit)
+    periodic: {
+      type: Number,
+      default: 15,
+      min: 15,
+      max: 60
+    },
     // ======================
     // Koordinat (untuk map)
     // ======================
@@ -42,7 +48,7 @@ const deviceSchema = new mongoose.Schema(
     // ======================
     isActive: {
       type: Boolean,
-      default: false
+      default: true
     },
     // ======================
     // ONLINE / OFFLINE STATUS

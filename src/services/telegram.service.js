@@ -1,10 +1,11 @@
 import axios from 'axios'
 import { getTenantFromCache } from '../cache/deviceCache.js'
 
+const token = process.env.TELEGRAM_BOT_TOKEN
 // ======================================================
 // Helper: kirim message ke Telegram
 // ======================================================
-const sendMessage = async (token, chatId, message) => {
+const sendMessage = async (chatId, message) => {
   await axios.post(
     `https://api.telegram.org/bot${token}/sendMessage`,
     {
@@ -27,9 +28,8 @@ export const sendTelemetryToTelegram = async ({
     // =========================
     const tenant = getTenantFromCache(tenantId)
     if (!tenant?.telegram?.isActive) return
-    const token = tenant.telegram.botToken
     const chatId = tenant.telegram.chatId
-    if (!token || !chatId) return
+    if (!chatId) return
     const message = `
 📡 *Telemetry Update*
 🏷 Tenant: ${tenant.name}
@@ -38,7 +38,7 @@ export const sendTelemetryToTelegram = async ({
 📶 RSSI: ${rssi ?? '-'}
 🕒 ${new Date().toLocaleString('id-ID')}
     `
-    await sendMessage(token, chatId, message)
+    await sendMessage(chatId, message)
 
   } catch (err) {
     console.error('❌ Telegram send error:', err.message)
@@ -58,8 +58,8 @@ export const sendDeviceStatusTelegram = async ({
     const tenant = getTenantFromCache(tenantId)
     if (!tenant?.telegram?.isActive) return
 
-    const { botToken, chatId } = tenant.telegram
-    if (!botToken || !chatId) return
+    const { chatId } = tenant.telegram
+    if (!chatId) return
 
     const timeStr = lastSeen
       ? new Date(lastSeen).toLocaleString('id-ID')
@@ -89,7 +89,7 @@ export const sendDeviceStatusTelegram = async ({
 
     if (!message) return
 
-    await sendMessage(botToken, chatId, message)
+    await sendMessage(chatId, message)
 
   } catch (err) {
     console.error('❌ Telegram status error:', err.message)

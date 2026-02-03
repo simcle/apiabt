@@ -11,6 +11,7 @@ import tenantRoutes  from './src/routes/tenant.routes.js'
 import deviceRoutes from './src/routes/device.routes.js'
 import telemetryRoutes from './src/routes/telemetry.routes.js'
 import monitoringRoutes from './src/routes/monitoring.routes.js'
+import telegramRouters from './src/routes/telegram.routes.js'
 
 
 const app = express()
@@ -29,8 +30,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/api/v1', tenantRoutes)
 app.use('/api/v1', deviceRoutes)
 app.use('/api/v1', telemetryRoutes)
-app.use('/api/v1/', monitoringRoutes)
-
+app.use('/api/v1', monitoringRoutes)
+app.use('/api/v1', telegramRouters)
 // ======================
 // SERVE VUE BUILD
 // ======================

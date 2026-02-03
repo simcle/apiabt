@@ -69,8 +69,8 @@ export const ingestTelemetry = async (req, res) => {
             lastSeen: now
           }).catch(() => {})
         }
-
-        return res.status(200).json({ ok: 1 })
+        const interval = device?.periodic || 15
+        return res.status(200).send({periodic: interval})
 
     } catch (error) {
         console.error('❌ ingestTelemetry error:', err)

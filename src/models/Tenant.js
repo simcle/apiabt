@@ -15,11 +15,6 @@ const tenantSchema = new mongoose.Schema(
     },
 
     telegram: {
-      botToken: {
-        type: String,
-        default: null,
-        select: false
-      },
       chatId: {
         type: String,
         default: null
