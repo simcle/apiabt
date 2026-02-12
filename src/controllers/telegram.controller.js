@@ -71,7 +71,7 @@ export const telegramWebhook = async (req, res) => {
         }
 
         // ======================
-        // /update_tenant
+        // /rename_tenant
         // ======================
         if (text.startsWith('/rename_tenant')) {
             const parts = text.trim().split(/\s+/)
@@ -350,6 +350,7 @@ export const telegramWebhook = async (req, res) => {
             }
 
             let message = `📋 Daftar Device\n`
+            message += `Tenant ID : ${tenant.tenantId}\n`
             message += `Tenant: ${tenant.name}\n\n`
 
             devices.forEach((d, i) => {
