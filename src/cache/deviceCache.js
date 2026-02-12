@@ -40,6 +40,21 @@ export const updateDeviceLastSeen = (tenantId, deviceId, lastSeen) => {
 }
 
 // ======================================================
+// GET device by tenant
+// ======================================================
+export const getDevicesByTenantFromCache = (tenantId) => {
+  const devices = []
+
+  for (const device of deviceMap.values()) {
+    if (device.tenantId === tenantId) {
+      devices.push(device)
+    }
+  }
+
+  return devices
+}
+
+// ======================================================
 // ADD TENANT TO CACHE (realtime)
 // ======================================================
 export const addTenantToCache = (tenant) => {

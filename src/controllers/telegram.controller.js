@@ -1,6 +1,6 @@
 import Tenant from "../models/Tenant.js"
 import Device from "../models/Device.js"
-import { addTenantToCache, updateTenantInCache, addDeviceToCache, updateDeviceInCache, getDeviceFromCache } from "../cache/deviceCache.js"
+import { addTenantToCache, updateTenantInCache, addDeviceToCache, updateDeviceInCache, getDevicesByTenantFromCache } from "../cache/deviceCache.js"
 import axios from "axios"
 export const telegramWebhook = async (req, res) => {
     try {
