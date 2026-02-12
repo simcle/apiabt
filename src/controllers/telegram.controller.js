@@ -1,6 +1,6 @@
 import Tenant from "../models/Tenant.js"
 import Device from "../models/Device.js"
-import { addTenantToCache, updateTenantInCache, addDeviceToCache, updateDeviceInCache } from "../cache/deviceCache.js"
+import { addTenantToCache, updateTenantInCache, addDeviceToCache, updateDeviceInCache, getDeviceFromCache } from "../cache/deviceCache.js"
 import axios from "axios"
 export const telegramWebhook = async (req, res) => {
     try {
@@ -323,12 +323,56 @@ export const telegramWebhook = async (req, res) => {
             return res.sendStatus(200)
         }
 
+        // ======================
+        // /list_device
+        // ======================
+        if (text === '/list_device') {
+
+            // cari tenant dari chatId
+            const tenant = await Tenant.findOne({ 'telegram.chatId': chatId })
+            if (!tenant) {
+                await sendMessage(
+                chatId,
+                '❌ Tenant tidak ditemukan.\nGunakan /reg terlebih dahulu.'
+                )
+                return res.sendStatus(200)
+            }
+
+            // ambil device dari cache
+            const devices = getDevicesByTenantFromCache(tenant.tenantId)
+
+            if (!devices.length) {
+                await sendMessage(
+                chatId,
+                '📭 Belum ada device terdaftar.\nGunakan /add_device untuk menambahkan.'
+                )
+                return res.sendStatus(200)
+            }
+
+            let message = `📋 Daftar Device\n`
+            message += `Tenant: ${tenant.name}\n\n`
+
+            devices.forEach((d, i) => {
+                message +=
+                `${i + 1}. ${d.deviceId}\n` +
+                `   Nama   : ${d.name}\n` +
+                `   Status : ${d.status ?? 'OFFLINE'}\n` +
+                `   Last   : ${d.lastSeen ? new Date(d.lastSeen).toLocaleString('id-ID') : '-'}\n\n`
+            })
+
+            await sendMessage(chatId, message)
+
+            return res.sendStatus(200)
+        }
+
         return res.sendStatus(200)
 
     } catch (err) {
         console.error('Telegram webhook error:', err)
         return res.sendStatus(200)
     }
+
+
 
 }
 
