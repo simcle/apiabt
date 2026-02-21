@@ -28,8 +28,10 @@ export const sendTelemetryToTelegram = async ({
     // =========================
     const tenant = getTenantFromCache(tenantId)
     if (!tenant?.telegram?.isActive) return
-    const chatId = tenant.telegram.chatId
-    if (!chatId) return
+    const { chatId, groupChatId } = tenant.telegram
+    // Prioritas kirim ke group jika ada
+    const targetChatId = groupChatId || chatId
+    if (!targetChatId) return
     const message = `
 📡 *Telemetry Update*
 🏷 Tenant: ${tenant.name}
@@ -38,7 +40,7 @@ export const sendTelemetryToTelegram = async ({
 📶 RSSI: ${rssi ?? '-'}
 🕒 ${new Date().toLocaleString('id-ID')}
     `
-    await sendMessage(chatId, message)
+    await sendMessage(targetChatId, message)
 
   } catch (err) {
     console.error('❌ Telegram send error:', err.message)
@@ -58,8 +60,11 @@ export const sendDeviceStatusTelegram = async ({
     const tenant = getTenantFromCache(tenantId)
     if (!tenant?.telegram?.isActive) return
 
-    const { chatId } = tenant.telegram
-    if (!chatId) return
+    const { chatId, groupChatId } = tenant.telegram
+
+    // Prioritas: group → private
+    const targetChatId = groupChatId || chatId
+    if (!targetChatId) return
 
     const timeStr = lastSeen
       ? new Date(lastSeen).toLocaleString('id-ID')
@@ -87,7 +92,7 @@ export const sendDeviceStatusTelegram = async ({
 
     if (!message) return
 
-    await sendMessage(chatId, message)
+    await sendMessage(targetChatId, message)
 
   } catch (err) {
     console.error('❌ Telegram status error:', err.message)

@@ -366,6 +366,54 @@ export const telegramWebhook = async (req, res) => {
             return res.sendStatus(200)
         }
 
+        // ======================
+        // /set_group
+        // ======================
+        if (text === '/set_group') {
+
+        // pastikan ini group
+        if (msg.chat.type !== 'group' && msg.chat.type !== 'supergroup') {
+            await sendMessage(
+            chatId,
+            '❌ Perintah ini hanya bisa dijalankan di dalam group.'
+            )
+            return res.sendStatus(200)
+        }
+
+        const groupChatId = msg.chat.id
+        const userId = msg.from.id
+
+        // cari tenant berdasarkan private chat user
+        const tenant = await Tenant.findOne({ 'telegram.chatId': userId })
+
+        if (!tenant) {
+            await sendMessage(
+            groupChatId,
+            '❌ Anda belum terdaftar sebagai tenant.\nGunakan /reg di private chat bot.'
+            )
+            return res.sendStatus(200)
+        }
+
+        // update DB
+        tenant.telegram.groupChatId = groupChatId
+        await tenant.save()
+
+        // update cache
+        updateTenantInCache(tenant.tenantId, {
+            telegram: tenant.telegram
+        })
+
+        await sendMessage(
+            groupChatId,
+            `✅ Group berhasil dihubungkan dengan tenant:\n\n` +
+            `Tenant ID : ${tenant.tenantId}\n` +
+            `Nama      : ${tenant.name}\n\n` +
+            `Semua notifikasi device akan dikirim ke group ini.`
+        )
+
+        return res.sendStatus(200)
+        }
+
         return res.sendStatus(200)
 
     } catch (err) {

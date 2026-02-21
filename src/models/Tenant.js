@@ -22,6 +22,10 @@ const tenantSchema = new mongoose.Schema(
       isActive: {
         type: Boolean,
         default: false
+      },
+      groupChatId: {
+        type: String,
+        default: null
       }
     }
   },
