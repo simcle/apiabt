@@ -9,7 +9,7 @@ export const loadCache = async () => {
   deviceMap.clear()
 
   const tenants = await Tenant.find()
-    .select('+telegram.botToken telegram.chatId telegram.isActive tenantId name')
+    .select('+telegram.botToken telegram.chatId, telegram.groupChatId, telegram.isActive tenantId name')
     .lean()
   for (const t of tenants) {
     tenantMap.set(t.tenantId, t)
